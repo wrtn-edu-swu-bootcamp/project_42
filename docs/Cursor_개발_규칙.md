@@ -38,7 +38,7 @@
 - **핵심 기능**: 
   - 일기 입력 → 130+ 감정 라벨 분석 (심리학 이론)
   - 공감/조언 → 음악/꽃/활동 추천 (근거 포함)
-  - 히스토리/트렌드
+  - 히스토리
 - **MVP 제약**: 
   - 2시간 구현
   - localStorage 저장
@@ -74,7 +74,7 @@ atti-app/
 ├── app/                      # Next.js 라우트
 │   ├── page.tsx              # Home (일기 작성)
 │   ├── result/page.tsx       # Result (분석 결과)
-│   ├── history/page.tsx      # History (기록/트렌드)
+│   ├── history/page.tsx      # History (기록)
 │   ├── safety/page.tsx       # Safety (위기 안내)
 │   ├── settings/page.tsx     # Settings (백업/복원)
 │   ├── api/analyze/route.ts  # AI 분석 API
@@ -227,7 +227,7 @@ atti-app/
 7. API `/api/analyze`: OpenAI 호출 + Zod 검증 + 카탈로그 ID whitelist
 8. Result: 감정 배지 (SVG) + 요약 + 공감/조언 + 액션 카드
 9. localStorage: JournalEntry 저장/조회 (`lib/storage.ts`)
-10. History: 최근 7일 트렌드 (Recharts) + 캘린더 뷰 + 상세
+10. History: 기록 목록 + 상세
 11. Safety: 위기 신호 감지 시 전환 + 1393 노출 + 면책 문구
 12. Settings: JSON 백업 다운로드 + 복원 업로드 + 초기화
 

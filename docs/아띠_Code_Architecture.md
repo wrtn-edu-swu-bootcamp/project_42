@@ -79,7 +79,7 @@ graph TD
 7. 검증 통과 시 결과 반환
 8. Result 화면에 표시 (감정 배지/공감/조언/액션 카드)
 9. localStorage에 저장 (JournalEntry)
-10. History에서 최근 7일 트렌드/캘린더 표시
+10. History에서 기록 목록 표시
 
 **위험 신호 감지 시**: 일반 응답 중단 → Safety 화면 즉시 전환 → 1393 노출
 
@@ -118,13 +118,12 @@ graph TD
 - `EmotionBadge.tsx`: SVG 기반 감정 배지 (public/atti/emotions/*.svg)
 - `SummaryBlock.tsx`: 1~3줄 핵심 요약
 - `ResponseSection.tsx`: 공감/조언 메시지
-- `ActionCard.tsx`: 음악/꽃/활동 카드 (완료 체크 버튼 포함)
+- `ActionCard.tsx`: 음악/꽃/활동 카드
 - `EvidenceCard.tsx`: 근거 출처 표시
 - `SaveButton.tsx`: "기록에 저장" (localStorage)
 
 **필요한 상태**:
 - `analysisResult`: AnalysisResult | null
-- `completedActions`: Set<string> (완료한 액션 ID)
 - `isSaving`: boolean
 
 **필요한 API**:
@@ -132,22 +131,19 @@ graph TD
 
 **저장되는 데이터**:
 - `JournalEntry` (localStorage에 저장)
-  - id, createdAt, text, emotions, summary, response, actions, completedActions
+  - id, createdAt, text, emotions, summary, response, actions
 
 ---
 
 ### 2-3. History (기록)
 
 **필요한 컴포넌트**:
-- `TrendChart.tsx`: 최근 7일 감정 흐름 (Recharts)
-- `CalendarView.tsx`: 날짜별 감정 스탬프 (SVG 아이콘)
 - `EntryCard.tsx`: 날짜 + 한 줄 요약 + 주요 감정 배지
 - `DetailModal.tsx`: 클릭 시 전체 내용 표시
 
 **필요한 상태**:
 - `entries`: JournalEntry[]
 - `selectedEntry`: JournalEntry | null
-- `dateRange`: { start, end }
 
 **필요한 API**:
 - 없음 (localStorage에서 조회)
@@ -232,7 +228,7 @@ atti-app/
 │   ├── result/
 │   │   └── page.tsx              # Result (분석 결과)
 │   ├── history/
-│   │   └── page.tsx              # History (기록/트렌드)
+│   │   └── page.tsx              # History (기록)
 │   ├── safety/
 │   │   └── page.tsx              # Safety (위기 안내)
 │   ├── settings/
@@ -250,8 +246,6 @@ atti-app/
 │   ├── emotion-badge.tsx         # 감정 배지 (SVG)
 │   ├── action-card.tsx           # 액션 아이템 카드
 │   ├── music-card.tsx            # 음악 추천 카드
-│   ├── trend-chart.tsx           # 감정 트렌드 차트
-│   ├── calendar-view.tsx         # 히스토리 캘린더
 │   ├── entry-card.tsx            # 기록 카드
 │   ├── loading-skeleton.tsx     # 로딩 UI
 │   └── ui/                       # shadcn/ui 컴포넌트
@@ -382,7 +376,6 @@ export interface JournalEntry {
   tags?: string[] // ['#학교', '#친구']
   intensity?: number // 0~5
   analysis: AnalysisResult
-  completedActions: string[] // 완료한 ActionItem ID
 }
 
 // localStorage 저장 포맷 (버전 관리)
@@ -465,7 +458,6 @@ export const AnalysisResultSchema = z.object({
         ],
         "riskLevel": "low"
       },
-      "completedActions": ["music-001"]
     }
   ],
   "createdAt": "2026-01-20T00:00:00.000Z",
@@ -885,7 +877,6 @@ export function getFallbackActions(): ActionItem[] {
 | 상태 | UI | 트리거 |
 |------|----|----|
 | **분석 로딩** | Skeleton (감정 배지/요약/액션 카드) | 페이지 진입 시 |
-| **action 완료 체크** | 체크 버튼 → 체크마크 + 짧은 축하 애니메이션 | onClick |
 | **기록 저장** | "기록에 저장" → "저장 완료!" Toast | localStorage 저장 |
 | **저장 실패** | Toast "저장 중 문제가 생겼어." | storage 에러 |
 
@@ -898,16 +889,6 @@ export function getFallbackActions(): ActionItem[] {
 </div>
 ```
 
-**완료 체크 애니메이션**:
-```tsx
-<button onClick={() => toggleComplete(action.id)}>
-  {completedActions.has(action.id) ? (
-    <CheckCircle className="text-green-500 animate-bounce-once" />
-  ) : (
-    <Circle className="text-gray-400" />
-  )}
-</button>
-```
 
 ---
 
@@ -1164,7 +1145,6 @@ function maskSensitiveData(data: any) {
 | 2 | 짧은 텍스트 제출 (5자) | 400 에러, "조금 더 자세히 써줄래?" |
 | 3 | 정상 일기 제출 (50자) | Result 페이지 전환, 감정 배지 3~5개 |
 | 4 | 위험 신호 포함 ("죽고 싶어") | Safety 페이지 즉시 전환, 1393 노출 |
-| 5 | 액션 아이템 "완료!" 체크 | 체크마크 + 짧은 애니메이션 |
 | 6 | "기록에 저장" 클릭 | Toast "저장 완료!", History에서 확인 가능 |
 | 7 | History 페이지 (빈 상태) | "첫 일기 써볼래?" + 홈 버튼 |
 | 8 | History 페이지 (1개 이상) | 차트 + 캘린더 + 카드 리스트 |
@@ -1290,7 +1270,6 @@ import { LineChart, Line, XAxis, YAxis } from 'recharts'
 
 **완료 기준**:
 - ✅ Result에서 "저장" → History에서 확인 가능
-- ✅ 최근 7일 트렌드 차트 표시 (데이터 1개라도)
 - ✅ 빈 상태 UI ("첫 일기 써볼래?")
 
 ---
