@@ -93,9 +93,9 @@
   }
 }
 
-/* 파스텔톤 배경 그라데이션 */
+/* 파스텔톤 배경 그라데이션 (연두색/민트) */
 .bg-pastel-gradient {
-  background: linear-gradient(180deg, #FFF8F3 0%, #F0F7FF 50%, #FFF5F8 100%);
+  background: linear-gradient(180deg, #F0FFF4 0%, #E8F5E9 50%, #F1F8E9 100%);
 }
 
 .bg-pastel-warm {
