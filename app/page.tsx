@@ -106,7 +106,15 @@ export default function Home() {
       {/* 헤더 */}
       <header className="bg-white/80 backdrop-blur-sm border-b border-gray-100/50 sticky top-0 z-40">
         <div className="max-w-2xl mx-auto px-4 py-4">
-          <h1 className="text-xl font-bold text-gray-900">아띠</h1>
+          <div className="flex items-center gap-2">
+            <h1 className="text-xl font-bold text-gray-900">아띠</h1>
+            <img 
+              src="/atti/atti 이미지.png" 
+              alt="아띠 캐릭터" 
+              className="w-8 h-8 object-contain"
+              onError={(e) => { e.currentTarget.style.display = 'none' }}
+            />
+          </div>
           <p className="text-sm text-gray-500">오늘 마음은 어때?</p>
         </div>
       </header>
