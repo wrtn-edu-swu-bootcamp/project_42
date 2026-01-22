@@ -195,14 +195,11 @@ export default function SettingsPage() {
             <p>
               이 앱은 <strong>감정 기록 및 자기 성찰을 돕는 도구</strong>야. 의료적 진단, 치료, 상담을 대신하지 않아.
             </p>
-            <p className="text-yellow-700">
-              도움받을 수 있는 곳
-            </p>
             <button
               onClick={() => router.push('/safety')}
               className="inline-block px-3 py-1.5 bg-yellow-200 hover:bg-yellow-300 text-yellow-800 font-medium rounded-lg transition-colors"
             >
-              자세히 보기
+              도움받을 수 있는 곳
             </button>
           </div>
         </div>
