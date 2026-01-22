@@ -186,23 +186,26 @@ export default function SettingsPage() {
           </div>
         </div>
 
-        {/* 면책 문구 + 위기 지원 통합 */}
-        <button
-          onClick={() => router.push('/safety')}
-          className="w-full bg-yellow-50 rounded-2xl border border-yellow-100 overflow-hidden text-left hover:border-yellow-200 transition-colors"
-        >
+        {/* 면책 문구 */}
+        <div className="w-full bg-yellow-50 rounded-2xl border border-yellow-100 overflow-hidden">
           <div className="px-4 py-3 border-b border-yellow-100">
             <h2 className="font-semibold text-yellow-800">면책 문구</h2>
           </div>
-          <div className="p-4 space-y-2 text-sm text-yellow-800">
+          <div className="p-4 space-y-3 text-sm text-yellow-800">
             <p>
               이 앱은 <strong>감정 기록 및 자기 성찰을 돕는 도구</strong>야. 의료적 진단, 치료, 상담을 대신하지 않아.
             </p>
-            <p className="text-yellow-700 pt-2 border-t border-yellow-100 mt-2">
-              도움받을 수 있는 곳 더보기
+            <p className="text-yellow-700">
+              도움받을 수 있는 곳
             </p>
+            <button
+              onClick={() => router.push('/safety')}
+              className="inline-block px-3 py-1.5 bg-yellow-200 hover:bg-yellow-300 text-yellow-800 font-medium rounded-lg transition-colors"
+            >
+              더보기
+            </button>
           </div>
-        </button>
+        </div>
       </main>
 
       {/* 삭제 확인 모달 */}
