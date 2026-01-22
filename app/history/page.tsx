@@ -58,7 +58,7 @@ export default function HistoryPage() {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-10 w-10 border-2 border-blue-600 border-t-transparent mx-auto mb-3"></div>
+          <div className="animate-spin rounded-full h-10 w-10 border-2 border-amber-700 border-t-transparent mx-auto mb-3"></div>
           <p className="text-gray-500 text-sm">기록을 불러오는 중...</p>
         </div>
       </div>
@@ -77,7 +77,7 @@ export default function HistoryPage() {
             </div>
             <button
               onClick={goToToday}
-              className="px-3 py-1.5 text-sm font-medium text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors"
+              className="px-3 py-1.5 text-sm font-medium text-amber-700 bg-amber-50 rounded-lg hover:bg-amber-100 transition-colors"
             >
               오늘
             </button>
@@ -149,7 +149,7 @@ export default function HistoryPage() {
                   {/* 날짜 숫자 */}
                   <span className={`
                     text-sm font-medium
-                    ${isToday ? 'w-7 h-7 bg-blue-600 text-white rounded-full flex items-center justify-center' : ''}
+                    ${isToday ? 'w-7 h-7 bg-amber-700 text-white rounded-full flex items-center justify-center' : ''}
                     ${!isToday && dayOfWeek === 0 ? 'text-red-400' : ''}
                     ${!isToday && dayOfWeek === 6 ? 'text-blue-400' : ''}
                     ${!isToday && dayOfWeek !== 0 && dayOfWeek !== 6 ? 'text-gray-700' : ''}
@@ -162,13 +162,13 @@ export default function HistoryPage() {
                     <div className="absolute bottom-1 flex gap-0.5">
                       {dayEntries.length <= 3 ? (
                         dayEntries.map((_, i) => (
-                          <div key={i} className="w-1.5 h-1.5 bg-blue-500 rounded-full" />
+                          <div key={i} className="w-1.5 h-1.5 bg-amber-600 rounded-full" />
                         ))
                       ) : (
                         <>
-                          <div className="w-1.5 h-1.5 bg-blue-500 rounded-full" />
-                          <div className="w-1.5 h-1.5 bg-blue-500 rounded-full" />
-                          <span className="text-[10px] text-blue-500 font-medium">+{dayEntries.length - 2}</span>
+                          <div className="w-1.5 h-1.5 bg-amber-600 rounded-full" />
+                          <div className="w-1.5 h-1.5 bg-amber-600 rounded-full" />
+                          <span className="text-[10px] text-amber-600 font-medium">+{dayEntries.length - 2}</span>
                         </>
                       )}
                     </div>
@@ -185,7 +185,7 @@ export default function HistoryPage() {
             <h3 className="text-sm font-medium text-gray-500 mb-3 px-1">
               {format(selectedDate, 'M월 d일 (EEEE)', { locale: ko })}
               {selectedDateEntries.length > 0 && (
-                <span className="ml-2 text-blue-600">{selectedDateEntries.length}개의 기록</span>
+                <span className="ml-2 text-amber-700">{selectedDateEntries.length}개의 기록</span>
               )}
             </h3>
 
@@ -194,7 +194,7 @@ export default function HistoryPage() {
                 <p className="text-gray-400 text-sm mb-3">이 날은 기록이 없어</p>
                 <button
                   onClick={() => router.push('/')}
-                  className="text-sm text-blue-600 font-medium hover:underline"
+                  className="text-sm text-amber-700 font-medium hover:underline"
                 >
                   지금 일기 쓰러가기
                 </button>
@@ -297,7 +297,7 @@ export default function HistoryPage() {
             <p className="text-sm text-gray-500 mb-4">첫 일기를 써볼까?</p>
             <button
               onClick={() => router.push('/')}
-              className="px-5 py-2.5 bg-blue-600 text-white text-sm font-medium rounded-xl hover:bg-blue-700 transition-colors"
+              className="px-5 py-2.5 bg-amber-700 text-white text-sm font-medium rounded-xl hover:bg-amber-800 transition-colors"
             >
               일기 쓰러가기
             </button>

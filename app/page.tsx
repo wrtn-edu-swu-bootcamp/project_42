@@ -206,7 +206,7 @@ export default function Home() {
                         onClick={() => setIntensity(intensity === level ? undefined : level)}
                         className={`flex-1 py-2.5 rounded-xl text-sm font-medium transition-all ${
                           intensity === level
-                            ? 'bg-blue-600 text-white shadow-sm'
+                            ? 'bg-amber-700 text-white shadow-sm'
                             : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                         }`}
                         disabled={isLoading}
@@ -229,7 +229,7 @@ export default function Home() {
                     <select
                       value={condition.sleep || ''}
                       onChange={(e) => setCondition({ ...condition, sleep: e.target.value as any || undefined })}
-                      className="w-full px-3 py-2.5 bg-gray-100 border-0 rounded-xl text-sm text-gray-700 focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-3 py-2.5 bg-gray-100 border-0 rounded-xl text-sm text-gray-700 focus:ring-2 focus:ring-amber-500"
                       disabled={isLoading}
                     >
                       <option value="">-</option>
@@ -245,7 +245,7 @@ export default function Home() {
                     <select
                       value={condition.meal || ''}
                       onChange={(e) => setCondition({ ...condition, meal: e.target.value as any || undefined })}
-                      className="w-full px-3 py-2.5 bg-gray-100 border-0 rounded-xl text-sm text-gray-700 focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-3 py-2.5 bg-gray-100 border-0 rounded-xl text-sm text-gray-700 focus:ring-2 focus:ring-amber-500"
                       disabled={isLoading}
                     >
                       <option value="">-</option>
@@ -262,7 +262,7 @@ export default function Home() {
                     <select
                       value={condition.activity || ''}
                       onChange={(e) => setCondition({ ...condition, activity: e.target.value as any || undefined })}
-                      className="w-full px-3 py-2.5 bg-gray-100 border-0 rounded-xl text-sm text-gray-700 focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-3 py-2.5 bg-gray-100 border-0 rounded-xl text-sm text-gray-700 focus:ring-2 focus:ring-amber-500"
                       disabled={isLoading}
                     >
                       <option value="">-</option>
@@ -284,7 +284,7 @@ export default function Home() {
                     value={tags}
                     onChange={(e) => setTags(e.target.value)}
                     placeholder="#학교 #친구 #직장"
-                    className="w-full px-4 py-2.5 bg-gray-100 border-0 rounded-xl text-sm focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-4 py-2.5 bg-gray-100 border-0 rounded-xl text-sm focus:ring-2 focus:ring-amber-500"
                     disabled={isLoading}
                   />
                 </div>
@@ -299,7 +299,7 @@ export default function Home() {
                   <button
                     type="button"
                     onClick={() => handleSubmit()}
-                    className="mt-2 text-sm text-blue-600 font-medium hover:underline"
+                    className="mt-2 text-sm text-amber-700 font-medium hover:underline"
                     disabled={isLoading}
                   >
                     다시 시도
@@ -313,7 +313,7 @@ export default function Home() {
               <button
                 type="submit"
                 disabled={isLoading || text.length < INPUT_LIMITS.MIN_LENGTH}
-                className="w-full py-3.5 bg-blue-600 text-white font-medium rounded-xl hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all active:scale-[0.98]"
+                className="w-full py-3.5 bg-amber-700 text-white font-medium rounded-xl hover:bg-amber-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all active:scale-[0.98]"
               >
                 {isLoading ? (
                   <span className="flex items-center justify-center gap-2">

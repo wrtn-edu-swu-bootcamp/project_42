@@ -23,7 +23,7 @@ export default function BottomNav() {
                 key={item.path}
                 onClick={() => router.push(item.path)}
                 className={`flex flex-col items-center justify-center w-20 h-full transition-colors ${
-                  isActive ? 'text-blue-600' : 'text-gray-400 hover:text-gray-600'
+                  isActive ? 'text-amber-700' : 'text-gray-400 hover:text-gray-600'
                 }`}
               >
                 {/* 아이콘 */}
@@ -46,12 +46,12 @@ export default function BottomNav() {
                   )}
                 </div>
                 {/* 라벨 */}
-                <span className={`text-xs font-medium ${isActive ? 'text-blue-600' : ''}`}>
+                <span className={`text-xs font-medium ${isActive ? 'text-amber-700' : ''}`}>
                   {item.label}
                 </span>
                 {/* 활성 표시 점 */}
                 {isActive && (
-                  <div className="absolute bottom-1 w-1 h-1 bg-blue-600 rounded-full" />
+                  <div className="absolute bottom-1 w-1 h-1 bg-amber-700 rounded-full" />
                 )}
               </button>
             )

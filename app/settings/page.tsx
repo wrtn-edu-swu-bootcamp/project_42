@@ -108,7 +108,7 @@ export default function SettingsPage() {
               </div>
               <button
                 onClick={handleBackup}
-                className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-xl hover:bg-blue-700 transition-colors"
+                className="px-4 py-2 bg-amber-700 text-white text-sm font-medium rounded-xl hover:bg-amber-800 transition-colors"
               >
                 백업
               </button>
