@@ -182,11 +182,12 @@ export default function HistoryPage() {
                       borderRadius: '8px',
                       padding: '8px 12px'
                     }}
-                    formatter={(value: number, name: string) => {
+                    formatter={(value: number | undefined, name: string) => {
+                      if (value === undefined) return ['0%', name]
                       if (name === 'positiveScore') return [`${(value * 100).toFixed(0)}%`, '긍정']
                       if (name === 'negativeScore') return [`${(value * 100).toFixed(0)}%`, '부정']
                       if (name === 'neutralScore') return [`${(value * 100).toFixed(0)}%`, '중립']
-                      return [value, name]
+                      return [value.toString(), name]
                     }}
                     labelFormatter={(label) => {
                       const data = trendData.find(d => d.date === label)
