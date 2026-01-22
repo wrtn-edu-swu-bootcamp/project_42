@@ -1,0 +1,37 @@
+[
+  {
+    "id": "breathing-001",
+    "category": "breathing",
+    "title": "4-7-8 호흡 (빠른 진정)",
+    "description": "4초 들이마시고, 7초 참고, 8초 내쉬어봐. 3번만 해도 긴장이 풀려요.",
+    "evidenceId": "breathing-anxiety-reduction"
+  },
+  {
+    "id": "breathing-002",
+    "category": "breathing",
+    "title": "복식호흡 (깊은 이완)",
+    "description": "배에 손을 올리고 천천히 숨쉬어봐. 배가 부풀어 오르는 걸 느껴봐.",
+    "evidenceId": "diaphragmatic-breathing"
+  },
+  {
+    "id": "breathing-003",
+    "category": "breathing",
+    "title": "박스 호흡 (집중력 회복)",
+    "description": "4초 들이마시고-4초 참고-4초 내쉬고-4초 참아봐. 반복하면 마음이 정돈돼요.",
+    "evidenceId": "box-breathing-focus"
+  },
+  {
+    "id": "breathing-004",
+    "category": "breathing",
+    "title": "한숨 호흡 (긴장 해소)",
+    "description": "크게 한숨을 3번 쉬어봐. 억눌린 감정이 빠져나가는 걸 느껴봐.",
+    "evidenceId": "sigh-breathing-release"
+  },
+  {
+    "id": "breathing-005",
+    "category": "breathing",
+    "title": "숫자 세기 호흡 (주의 전환)",
+    "description": "숨쉴 때마다 1부터 10까지 세어봐. 생각이 많을 때 도움이 돼요.",
+    "evidenceId": "mindful-breathing"
+  }
+]

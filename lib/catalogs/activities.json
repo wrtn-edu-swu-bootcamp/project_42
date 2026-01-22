@@ -1,0 +1,72 @@
+[
+  {
+    "id": "activity-001",
+    "category": "activity",
+    "title": "5분 산책 (가벼운 움직임)",
+    "description": "집 앞이나 복도를 천천히 걸어봐. 햇빛을 쬐면 기분이 나아져요.",
+    "evidenceId": "exercise-mood-boost"
+  },
+  {
+    "id": "activity-002",
+    "category": "activity",
+    "title": "따뜻한 차 한 잔 (감각 자극)",
+    "description": "따뜻한 컵을 손으로 감싸고 천천히 마셔봐. 온기가 마음을 진정시켜줘요.",
+    "evidenceId": "warmth-comfort"
+  },
+  {
+    "id": "activity-003",
+    "category": "activity",
+    "title": "창문 열고 환기 (공간 변화)",
+    "description": "신선한 공기가 머리를 맑게 해줘요. 작은 변화가 기분 전환을 줘요.",
+    "evidenceId": "environmental-change"
+  },
+  {
+    "id": "activity-004",
+    "category": "activity",
+    "title": "스트레칭 3분 (신체 이완)",
+    "description": "팔다리를 천천히 펴봐. 몸이 풀리면 마음도 편해져요.",
+    "evidenceId": "body-mind-connection"
+  },
+  {
+    "id": "activity-005",
+    "category": "activity",
+    "title": "좋아하는 간식 (작은 보상)",
+    "description": "달콤한 걸 천천히 먹어봐. 작은 즐거움이 기분을 올려줘요.",
+    "evidenceId": "reward-system"
+  },
+  {
+    "id": "activity-006",
+    "category": "activity",
+    "title": "친구에게 연락 (연결)",
+    "description": "짧은 메시지라도 보내봐. 누군가와 이어진 느낌이 외로움을 덜어줘요.",
+    "evidenceId": "social-connection"
+  },
+  {
+    "id": "activity-007",
+    "category": "activity",
+    "title": "좋아하는 사진 보기 (긍정 기억)",
+    "description": "즐거웠던 순간을 떠올려봐. 좋은 기억이 현재를 밝게 만들어줘요.",
+    "evidenceId": "positive-recall"
+  },
+  {
+    "id": "activity-008",
+    "category": "activity",
+    "title": "정리 5분 (통제감 회복)",
+    "description": "책상이나 방 한 구석만 정리해봐. 작은 성취가 통제감을 돌려줘요.",
+    "evidenceId": "control-restoration"
+  },
+  {
+    "id": "activity-009",
+    "category": "activity",
+    "title": "좋아하는 영상 보기 (기분 전환)",
+    "description": "웃긴 영상이나 힐링 콘텐츠를 5분만 봐. 주의를 돌리면 감정이 누그러져요.",
+    "evidenceId": "distraction-technique"
+  },
+  {
+    "id": "activity-010",
+    "category": "activity",
+    "title": "손글씨로 감정 쓰기 (표현)",
+    "description": "지금 기분을 종이에 한 줄만 써봐. 밖으로 꺼내는 것만으로도 시원해져요.",
+    "evidenceId": "expressive-writing"
+  }
+]

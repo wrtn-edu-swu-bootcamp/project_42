@@ -1,0 +1,58 @@
+[
+  {
+    "id": "flower-001",
+    "category": "flower",
+    "title": "해바라기 (밝은 에너지)",
+    "description": "밝고 따뜻한 느낌이 기분을 북돋아줘요. 노란색이 긍정적인 기운을 전해줘요.",
+    "evidenceId": "color-therapy-yellow"
+  },
+  {
+    "id": "flower-002",
+    "category": "flower",
+    "title": "라벤더 (진정과 안정)",
+    "description": "보랏빛이 마음을 차분하게 해줘요. 은은한 향기로 긴장을 풀어줘요.",
+    "evidenceId": "aromatherapy-lavender"
+  },
+  {
+    "id": "flower-003",
+    "category": "flower",
+    "title": "백합 (순수한 위로)",
+    "description": "하얀 꽃이 깨끗하고 평화로운 느낌을 줘요. 차분한 마음을 회복시켜줘요.",
+    "evidenceId": "color-therapy-white"
+  },
+  {
+    "id": "flower-004",
+    "category": "flower",
+    "title": "장미 (따뜻한 사랑)",
+    "description": "부드러운 핑크색이 따뜻함을 전해줘요. 스스로를 사랑하는 마음을 기억하게 해줘요.",
+    "evidenceId": "self-compassion"
+  },
+  {
+    "id": "flower-005",
+    "category": "flower",
+    "title": "데이지 (소박한 평온)",
+    "description": "작고 소박한 꽃이 큰 위로를 줘요. 단순함 속의 아름다움을 느껴봐요.",
+    "evidenceId": "mindfulness-simplicity"
+  },
+  {
+    "id": "flower-006",
+    "category": "flower",
+    "title": "튤립 (새로운 시작)",
+    "description": "봄의 기운이 새로운 출발을 응원해요. 다채로운 색이 희망을 전해줘요.",
+    "evidenceId": "color-therapy-spring"
+  },
+  {
+    "id": "flower-007",
+    "category": "flower",
+    "title": "민들레 (작은 용기)",
+    "description": "작지만 강한 생명력이 용기를 줘요. 홀씨가 날아가는 모습이 변화를 상징해요.",
+    "evidenceId": "resilience-nature"
+  },
+  {
+    "id": "flower-008",
+    "category": "flower",
+    "title": "카네이션 (따스한 마음)",
+    "description": "부드러운 색감이 안정감을 줘요. 누군가를 생각하는 마음을 표현해줘요.",
+    "evidenceId": "gratitude-expression"
+  }
+]

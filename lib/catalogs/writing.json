@@ -1,0 +1,37 @@
+[
+  {
+    "id": "writing-001",
+    "category": "writing",
+    "title": "감사 3줄 쓰기 (긍정 초점)",
+    "description": "오늘 감사한 것 3가지를 써봐. 작은 것도 괜찮아. 긍정 감정을 키워줘요.",
+    "evidenceId": "gratitude-journaling"
+  },
+  {
+    "id": "writing-002",
+    "category": "writing",
+    "title": "감정 이름 붙이기 (명료화)",
+    "description": "지금 느끼는 감정에 구체적인 이름을 붙여봐. '짜증'보다 '무시당한 느낌'처럼.",
+    "evidenceId": "affect-labeling"
+  },
+  {
+    "id": "writing-003",
+    "category": "writing",
+    "title": "내일의 나에게 편지 (관점 전환)",
+    "description": "내일의 나에게 짧은 편지를 써봐. 시간이 지나면 달라진다는 걸 기억하게 해줘요.",
+    "evidenceId": "temporal-distancing"
+  },
+  {
+    "id": "writing-004",
+    "category": "writing",
+    "title": "좋은 점 1가지 찾기 (균형)",
+    "description": "나쁜 상황에서도 좋은 점 하나를 찾아봐. 균형 잡힌 시각을 줘요.",
+    "evidenceId": "cognitive-reframing"
+  },
+  {
+    "id": "writing-005",
+    "category": "writing",
+    "title": "걱정 목록 쓰고 접기 (거리두기)",
+    "description": "걱정을 종이에 적고 접어서 치워봐. 물리적 거리가 심리적 거리를 만들어줘요.",
+    "evidenceId": "worry-postponement"
+  }
+]
