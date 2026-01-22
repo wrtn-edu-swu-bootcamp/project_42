@@ -80,7 +80,7 @@ export default function SafetyPage() {
             </button>
 
             <button
-              onClick={() => window.open('https://www.psychiatry.or.kr', '_blank', 'noopener,noreferrer')}
+              onClick={() => window.open('https://www.mentalhealth.go.kr', '_blank', 'noopener,noreferrer')}
               className="w-full p-4 flex items-center gap-3 hover:bg-gray-50 transition-colors text-left"
             >
               <div className="w-10 h-10 bg-purple-100 rounded-xl flex items-center justify-center">
@@ -89,8 +89,8 @@ export default function SafetyPage() {
                 </svg>
               </div>
               <div className="flex-1">
-                <p className="font-medium text-gray-800">대한신경정신의학회</p>
-                <p className="text-sm text-gray-500">가까운 정신건강의학과 찾기</p>
+                <p className="font-medium text-gray-800">국가정신건강정보포털</p>
+                <p className="text-sm text-gray-500">정신건강복지센터 찾기 (정부 운영)</p>
               </div>
               <svg className="w-5 h-5 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
