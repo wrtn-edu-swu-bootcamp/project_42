@@ -202,7 +202,7 @@ export default function SettingsPage() {
               onClick={() => router.push('/safety')}
               className="inline-block px-3 py-1.5 bg-yellow-200 hover:bg-yellow-300 text-yellow-800 font-medium rounded-lg transition-colors"
             >
-              더보기
+              자세히 보기
             </button>
           </div>
         </div>
