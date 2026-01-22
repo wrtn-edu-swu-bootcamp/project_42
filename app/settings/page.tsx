@@ -186,34 +186,27 @@ export default function SettingsPage() {
           </div>
         </div>
 
-        {/* 면책 문구 */}
-        <div className="bg-yellow-50 rounded-2xl border border-yellow-100 overflow-hidden">
+        {/* 면책 문구 + 위기 지원 통합 */}
+        <button
+          onClick={() => router.push('/safety')}
+          className="w-full bg-yellow-50 rounded-2xl border border-yellow-100 overflow-hidden text-left hover:border-yellow-200 transition-colors"
+        >
           <div className="px-4 py-3 border-b border-yellow-100">
             <h2 className="font-semibold text-yellow-800">면책 문구</h2>
           </div>
-          <div className="p-4 space-y-3 text-sm text-yellow-800">
+          <div className="p-4 space-y-2 text-sm text-yellow-800">
             <p>
               이 앱은 <strong>감정 기록 및 자기 성찰을 돕는 도구</strong>야. 의료적 진단, 치료, 상담을 대신하지 않아.
             </p>
-            <p>
-              위기 상황(자해, 극단적 선택 등)에서는 <strong>즉시 전문가의 도움</strong>을 받아줘:
-            </p>
-            <ul className="list-disc list-inside space-y-1 ml-2">
-              <li><strong>1393</strong>: 자살예방 상담전화 (24시간)</li>
-              <li><strong>129</strong>: 보건복지 상담센터 (24시간)</li>
-            </ul>
+            <div className="flex items-center justify-between pt-2">
+              <p className="text-yellow-700">
+                위기 상황 시 <strong>전문가 도움</strong> 받기
+              </p>
+              <svg className="w-5 h-5 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
+            </div>
           </div>
-        </div>
-
-        {/* 위기 지원 링크 */}
-        <button
-          onClick={() => router.push('/safety')}
-          className="w-full p-4 bg-white rounded-2xl border border-gray-100 flex items-center justify-between hover:border-blue-200 transition-colors"
-        >
-          <span className="font-medium text-gray-800">위기 지원 정보</span>
-          <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-          </svg>
         </button>
       </main>
 
