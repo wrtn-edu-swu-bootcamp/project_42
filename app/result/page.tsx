@@ -5,6 +5,7 @@ import { useSearchParams, useRouter } from 'next/navigation'
 import type { JournalEntry } from '@/lib/types'
 import { getEvidenceDescription } from '@/lib/evidence'
 import { getEmotionEmoji, getEmotionColor } from '@/lib/emotions'
+import { updateEntry } from '@/lib/storage'
 import BottomNav from '@/components/BottomNav'
 
 // Suspense fallback 로딩 컴포넌트
@@ -215,52 +216,89 @@ function ResultContent() {
               <h2 className="font-semibold text-gray-900">지금 해보면 좋을 것</h2>
             </div>
             <div className="divide-y divide-gray-100">
-              {analysis.actions.map((action) => (
-                <div key={action.id} className="p-4">
-                  <div className="flex items-start gap-3">
-                    {/* 카테고리 아이콘 */}
-                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${
-                      action.category === 'music' ? 'bg-purple-100' :
-                      action.category === 'flower' ? 'bg-pink-100' :
-                      action.category === 'activity' ? 'bg-green-100' :
-                      action.category === 'breathing' ? 'bg-cyan-100' :
-                      'bg-amber-100'
-                    }`}>
-                      <span className="text-lg">
-                        {action.category === 'music' && '🎵'}
-                        {action.category === 'flower' && '🌸'}
-                        {action.category === 'activity' && '🏃'}
-                        {action.category === 'breathing' && '🌬️'}
-                        {action.category === 'writing' && '✏️'}
-                      </span>
-                    </div>
-                    
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-1">
-                        <span className="text-xs font-medium text-gray-400 uppercase">
-                          {action.category === 'music' && '음악'}
-                          {action.category === 'flower' && '꽃'}
-                          {action.category === 'activity' && '활동'}
-                          {action.category === 'breathing' && '호흡'}
-                          {action.category === 'writing' && '쓰기'}
+              {analysis.actions.map((action) => {
+                const isCompleted = entry.completedActions.includes(action.id)
+                const handleToggle = () => {
+                  const newCompletedActions = isCompleted
+                    ? entry.completedActions.filter(id => id !== action.id)
+                    : [...entry.completedActions, action.id]
+                  
+                  try {
+                    updateEntry(entry.id, { completedActions: newCompletedActions })
+                    setEntry({ ...entry, completedActions: newCompletedActions })
+                  } catch (error) {
+                    console.error('Failed to update action:', error)
+                  }
+                }
+
+                return (
+                  <div key={action.id} className={`p-4 ${isCompleted ? 'opacity-60' : ''}`}>
+                    <div className="flex items-start gap-3">
+                      {/* 카테고리 아이콘 */}
+                      <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${
+                        action.category === 'music' ? 'bg-purple-100' :
+                        action.category === 'flower' ? 'bg-pink-100' :
+                        action.category === 'activity' ? 'bg-green-100' :
+                        action.category === 'breathing' ? 'bg-cyan-100' :
+                        'bg-amber-100'
+                      }`}>
+                        <span className="text-lg">
+                          {action.category === 'music' && '🎵'}
+                          {action.category === 'flower' && '🌸'}
+                          {action.category === 'activity' && '🏃'}
+                          {action.category === 'breathing' && '🌬️'}
+                          {action.category === 'writing' && '✏️'}
                         </span>
                       </div>
-                      <h3 className="font-medium text-gray-800 mb-1">{action.title}</h3>
-                      <p className="text-sm text-gray-600 leading-relaxed">{action.description}</p>
                       
-                      {/* 추천 근거 */}
-                      {action.evidenceId && getEvidenceDescription(action.evidenceId) && (
-                        <p className="text-xs text-amber-700 mt-2 flex items-start gap-1">
-                          <svg className="w-3.5 h-3.5 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                            <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-1">
+                          <span className="text-xs font-medium text-gray-400 uppercase">
+                            {action.category === 'music' && '음악'}
+                            {action.category === 'flower' && '꽃'}
+                            {action.category === 'activity' && '활동'}
+                            {action.category === 'breathing' && '호흡'}
+                            {action.category === 'writing' && '쓰기'}
+                          </span>
+                        </div>
+                        <h3 className={`font-medium mb-1 ${isCompleted ? 'text-gray-500 line-through' : 'text-gray-800'}`}>{action.title}</h3>
+                        <p className="text-sm text-gray-600 leading-relaxed">{action.description}</p>
+                        
+                        {/* 추천 근거 */}
+                        {action.evidenceId && getEvidenceDescription(action.evidenceId) && (
+                          <p className="text-xs text-amber-700 mt-2 flex items-start gap-1">
+                            <svg className="w-3.5 h-3.5 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                            </svg>
+                            <span>{getEvidenceDescription(action.evidenceId)}</span>
+                          </p>
+                        )}
+                      </div>
+
+                      {/* 체크 버튼 */}
+                      <button
+                        onClick={handleToggle}
+                        className={`w-11 h-11 flex items-center justify-center rounded-xl flex-shrink-0 transition-colors ${
+                          isCompleted
+                            ? 'bg-amber-700 text-white'
+                            : 'bg-gray-100 text-gray-400 hover:bg-gray-200'
+                        }`}
+                        aria-label={isCompleted ? '완료 취소' : '완료 표시'}
+                      >
+                        {isCompleted ? (
+                          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
                           </svg>
-                          <span>{getEvidenceDescription(action.evidenceId)}</span>
-                        </p>
-                      )}
+                        ) : (
+                          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                          </svg>
+                        )}
+                      </button>
                     </div>
                   </div>
-                </div>
-              ))}
+                )
+              })}
             </div>
           </div>
         )}

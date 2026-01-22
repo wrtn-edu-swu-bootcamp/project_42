@@ -44,6 +44,26 @@ const STABLE_MODELS = [
 // 현재 사용할 모델 인덱스
 let currentModelIndex = 0
 
+/** 429 / rate limit / quota exhausted 여부 확인 */
+function is429OrRateLimitError(err: unknown): boolean {
+  if (!err || typeof err !== 'object') return false
+  const e = err as Record<string, unknown>
+  const status = e?.status as number | string | undefined
+  const code = e?.code as number | string | undefined
+  const msg = String(e?.message ?? '')
+  if (status === 429 || code === 429) return true
+  if (status === 'RESOURCE_EXHAUSTED') return true
+  const lower = msg.toLowerCase()
+  return (
+    lower.includes('429') ||
+    lower.includes('resource_exhausted') ||
+    lower.includes('quota') ||
+    lower.includes('rate limit') ||
+    lower.includes('rate_limit') ||
+    lower.includes('too many requests')
+  )
+}
+
 // Gemini 클라이언트 초기화
 const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY || '')
 
@@ -145,16 +165,20 @@ export async function POST(request: NextRequest) {
         // 성공하면 루프 종료
         console.log(`AI analysis succeeded on attempt ${attempt}`)
         break
-      } catch (parseError: any) {
-        console.warn(`AI analysis attempt ${attempt} failed:`, parseError.message)
-        
+      } catch (parseError: unknown) {
+        const errMsg = parseError instanceof Error ? parseError.message : String(parseError)
+        console.warn(`AI analysis attempt ${attempt} failed:`, errMsg)
+
         // 마지막 시도였으면 Fallback 사용
         if (attempt === maxRetries) {
           console.error('All AI attempts failed, using fallback')
           analysis = getFallbackAnalysis()
         } else {
-          // 재시도 전 잠시 대기 (503 과부하 대응)
-          await new Promise(resolve => setTimeout(resolve, 1000))
+          // 429/할당량 초과 시 exponential backoff, 그 외 1초 대기 (503 등)
+          const delayMs = is429OrRateLimitError(parseError)
+            ? Math.min(2000 * Math.pow(2, attempt - 1), 15000)
+            : 1000
+          await new Promise((resolve) => setTimeout(resolve, delayMs))
         }
       }
     }
