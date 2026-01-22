@@ -164,6 +164,9 @@ export async function POST(request: NextRequest) {
         
         const responseText = result.response.text()
         
+        // 디버깅: 원본 응답 로그
+        console.log('Raw AI response (first 500 chars):', responseText?.substring(0, 500))
+        
         if (!responseText) {
           throw new Error('AI 응답이 비어있어요')
         }
@@ -175,6 +178,9 @@ export async function POST(request: NextRequest) {
         if (jsonText.startsWith('```')) {
           jsonText = jsonText.replace(/^```(?:json)?\s*\n?/, '').replace(/\n?```\s*$/, '')
         }
+        
+        // 디버깅: 정제된 JSON 로그
+        console.log('Cleaned JSON (first 500 chars):', jsonText?.substring(0, 500))
         
         // JSON 파싱 시도
         const aiResponse = JSON.parse(jsonText)
