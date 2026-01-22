@@ -35,63 +35,15 @@ function getFallbackAnalysis(): AnalysisResult {
   }
 }
 
-const MODEL_PREFERENCES = [
+// 안정적인 모델 목록 (과부하 시 순차 시도)
+const STABLE_MODELS = [
   'gemini-1.5-flash',
-  'gemini-1.5-pro',
-  'gemini-1.0-pro',
+  'gemini-1.5-pro', 
   'gemini-pro',
 ]
 
-let cachedModelName: string | null = null
-let cachedModelAt = 0
-
-async function resolveModelName(apiKey: string): Promise<string> {
-  const now = Date.now()
-  if (cachedModelName && now - cachedModelAt < 5 * 60 * 1000) {
-    return cachedModelName
-  }
-
-  try {
-    const res = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`
-    )
-    if (!res.ok) {
-      throw new Error(`ListModels failed: ${res.status}`)
-    }
-
-    const data = await res.json()
-    const models = (data.models ?? []).filter((model: any) =>
-      (model.supportedGenerationMethods ?? []).includes('generateContent')
-    )
-    const available = new Set(
-      models
-        .map((model: any) => model.name)
-        .filter(Boolean)
-        .map((name: string) => name.replace('models/', ''))
-    )
-
-    for (const preferred of MODEL_PREFERENCES) {
-      if (available.has(preferred)) {
-        cachedModelName = preferred
-        cachedModelAt = now
-        return preferred
-      }
-    }
-
-    const fallbackName = models[0]?.name?.replace('models/', '')
-    if (fallbackName) {
-      cachedModelName = fallbackName
-      cachedModelAt = now
-      return fallbackName
-    }
-  } catch (error) {
-    console.warn('Gemini listModels failed, using fallback.', error)
-  }
-
-  cachedModelName = MODEL_PREFERENCES[0]
-  cachedModelAt = now
-  return cachedModelName
-}
+// 현재 사용할 모델 인덱스
+let currentModelIndex = 0
 
 // Gemini 클라이언트 초기화
 const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY || '')
@@ -133,18 +85,21 @@ export async function POST(request: NextRequest) {
       validated.tags
     )
 
-    // Gemini API 호출 (재시도 1회 포함)
+    // Gemini API 호출 (여러 모델 순차 시도)
     let analysis: any = null // Zod parse 결과를 받기 위해 any 사용
-    const maxRetries = 2 // 최초 시도 + 재시도 1회
+    const maxRetries = STABLE_MODELS.length // 모든 모델 시도
 
     for (let attempt = 1; attempt <= maxRetries; attempt++) {
       try {
-        const modelName = await resolveModelName(process.env.GOOGLE_API_KEY)
+        // 순차적으로 다른 모델 시도
+        const modelName = STABLE_MODELS[(currentModelIndex + attempt - 1) % STABLE_MODELS.length]
+        console.log(`Trying model: ${modelName} (attempt ${attempt})`)
+        
         const model = genAI.getGenerativeModel({ 
           model: modelName,
           generationConfig: {
             temperature: 0.7,
-            maxOutputTokens: 800, // 비용 최소화 (원래 1000)
+            maxOutputTokens: 800,
             topP: 0.95,
             topK: 40,
           },
