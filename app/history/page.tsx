@@ -2,11 +2,12 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isSameDay, addMonths, subMonths, startOfWeek, endOfWeek } from 'date-fns'
+import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isSameDay, addMonths, subMonths, startOfWeek, endOfWeek, subDays, startOfDay } from 'date-fns'
 import { ko } from 'date-fns/locale'
 import type { JournalEntry } from '@/lib/types'
 import BottomNav from '@/components/BottomNav'
 import { getEmotionEmoji, getEmotionColor } from '@/lib/emotions'
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts'
 
 export default function HistoryPage() {
   const router = useRouter()
@@ -38,6 +39,73 @@ export default function HistoryPage() {
 
   // 선택된 날짜의 일기들
   const selectedDateEntries = selectedDate ? getEntriesForDate(selectedDate) : []
+
+  // 7일 감정 트렌드 데이터 생성
+  const get7DayTrendData = () => {
+    const today = startOfDay(new Date())
+    const sevenDaysAgo = subDays(today, 6)
+    
+    const trendData = []
+    for (let i = 6; i >= 0; i--) {
+      const date = subDays(today, i)
+      const dayEntries = entries.filter(entry => 
+        isSameDay(new Date(entry.createdAt), date)
+      )
+      
+      // 해당 날짜의 모든 감정 점수 평균 계산
+      let totalScore = 0
+      let emotionCount = 0
+      let dominantEmotion = ''
+      let maxScore = 0
+      
+      dayEntries.forEach(entry => {
+        entry.analysis.emotions.forEach(emotion => {
+          totalScore += emotion.score
+          emotionCount++
+          if (emotion.score > maxScore) {
+            maxScore = emotion.score
+            dominantEmotion = emotion.label
+          }
+        })
+      })
+      
+      const avgScore = emotionCount > 0 ? totalScore / emotionCount : 0
+      
+      // 감정 카테고리별 점수 계산 (긍정/부정/중립)
+      let positiveScore = 0
+      let negativeScore = 0
+      let neutralScore = 0
+      
+      dayEntries.forEach(entry => {
+        entry.analysis.emotions.forEach(emotion => {
+          const label = emotion.label.toLowerCase()
+          if (['joy', 'excited', 'calm', 'gratitude', 'hopeful', 'proud', 'content', 'relaxed', 'peaceful', 'satisfied', 'loved', 'confident'].includes(label)) {
+            positiveScore += emotion.score
+          } else if (['sad', 'lonely', 'depressed', 'helpless', 'disappointed', 'hurt', 'anxiety', 'nervous', 'worried', 'scared', 'overwhelmed', 'stressed', 'anger', 'irritated', 'frustrated', 'resentful', 'betrayed', 'jealous'].includes(label)) {
+            negativeScore += emotion.score
+          } else {
+            neutralScore += emotion.score
+          }
+        })
+      })
+      
+      trendData.push({
+        date: format(date, 'M/d'),
+        dateFull: format(date, 'yyyy-MM-dd'),
+        dayName: format(date, 'EEE', { locale: ko }),
+        avgScore: Math.round(avgScore * 100) / 100,
+        positiveScore: Math.round(positiveScore * 100) / 100,
+        negativeScore: Math.round(negativeScore * 100) / 100,
+        neutralScore: Math.round(neutralScore * 100) / 100,
+        dominantEmotion,
+        entryCount: dayEntries.length
+      })
+    }
+    
+    return trendData
+  }
+
+  const trendData = get7DayTrendData()
 
   // 캘린더 날짜 생성
   const monthStart = startOfMonth(currentMonth)
@@ -86,6 +154,84 @@ export default function HistoryPage() {
       </header>
 
       <main className="max-w-2xl mx-auto px-4 py-4">
+        {/* 7일 감정 트렌드 차트 */}
+        {entries.length > 0 && (
+          <div className="bg-white rounded-2xl shadow-soft border border-gray-100 mb-4 overflow-hidden">
+            <div className="px-4 py-3 border-b border-gray-100">
+              <h2 className="text-lg font-semibold text-gray-900">최근 7일 감정 트렌드</h2>
+              <p className="text-xs text-gray-500 mt-1">일주일간의 감정 변화를 확인해봐</p>
+            </div>
+            <div className="p-4">
+              <ResponsiveContainer width="100%" height={200}>
+                <LineChart data={trendData} margin={{ top: 5, right: 10, left: -20, bottom: 5 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                  <XAxis 
+                    dataKey="date" 
+                    tick={{ fontSize: 12, fill: '#6b7280' }}
+                    tickLine={{ stroke: '#e5e7eb' }}
+                  />
+                  <YAxis 
+                    tick={{ fontSize: 12, fill: '#6b7280' }}
+                    tickLine={{ stroke: '#e5e7eb' }}
+                    domain={[0, 1]}
+                  />
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: 'white',
+                      border: '1px solid #e5e7eb',
+                      borderRadius: '8px',
+                      padding: '8px 12px'
+                    }}
+                    formatter={(value: number, name: string) => {
+                      if (name === 'positiveScore') return [`${(value * 100).toFixed(0)}%`, '긍정']
+                      if (name === 'negativeScore') return [`${(value * 100).toFixed(0)}%`, '부정']
+                      if (name === 'neutralScore') return [`${(value * 100).toFixed(0)}%`, '중립']
+                      return [value, name]
+                    }}
+                    labelFormatter={(label) => {
+                      const data = trendData.find(d => d.date === label)
+                      return data ? `${data.dayName} ${data.date}` : label
+                    }}
+                  />
+                  <Legend 
+                    wrapperStyle={{ fontSize: '12px', paddingTop: '10px' }}
+                    formatter={(value) => {
+                      if (value === 'positiveScore') return '긍정'
+                      if (value === 'negativeScore') return '부정'
+                      if (value === 'neutralScore') return '중립'
+                      return value
+                    }}
+                  />
+                  <Line 
+                    type="monotone" 
+                    dataKey="positiveScore" 
+                    stroke="#f59e0b" 
+                    strokeWidth={2}
+                    dot={{ fill: '#f59e0b', r: 4 }}
+                    name="긍정"
+                  />
+                  <Line 
+                    type="monotone" 
+                    dataKey="negativeScore" 
+                    stroke="#ef4444" 
+                    strokeWidth={2}
+                    dot={{ fill: '#ef4444', r: 4 }}
+                    name="부정"
+                  />
+                  <Line 
+                    type="monotone" 
+                    dataKey="neutralScore" 
+                    stroke="#94a3b8" 
+                    strokeWidth={2}
+                    dot={{ fill: '#94a3b8', r: 4 }}
+                    name="중립"
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+        )}
+
         {/* 월간 캘린더 */}
         <div className="bg-white rounded-2xl shadow-soft border border-gray-100 mb-4 overflow-hidden">
           {/* 월 네비게이션 */}
