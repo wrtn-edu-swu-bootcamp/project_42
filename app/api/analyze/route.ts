@@ -5,6 +5,11 @@ import { AnalysisResultSchema, type JournalEntry, type AnalysisResult, type Emot
 import { SYSTEM_PROMPT, buildUserMessage } from '@/lib/prompts'
 import { randomUUID } from 'crypto'
 
+// 모바일 환경을 포함한 모든 환경에서 동작하도록 설정
+export const runtime = 'nodejs'
+export const dynamic = 'force-dynamic'
+export const maxDuration = 30 // 모바일 네트워크를 고려하여 30초로 증가
+
 /**
  * AI 응답 실패 시 안전한 Fallback 응답
  */
@@ -79,6 +84,18 @@ const InputSchema = z.object({
   tags: z.array(z.string()).optional(),
 })
 
+// OPTIONS 요청 처리 (CORS preflight)
+export async function OPTIONS() {
+  return new NextResponse(null, {
+    status: 200,
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'POST, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type',
+    },
+  })
+}
+
 export async function POST(request: NextRequest) {
   try {
     // API 키 확인
@@ -86,7 +103,12 @@ export async function POST(request: NextRequest) {
       console.error('GOOGLE_API_KEY is not set')
       return NextResponse.json(
         { error: '서버 설정 오류가 발생했어요' },
-        { status: 500 }
+        { 
+          status: 500,
+          headers: {
+            'Access-Control-Allow-Origin': '*',
+          },
+        }
       )
     }
 
@@ -126,9 +148,9 @@ export async function POST(request: NextRequest) {
 
         const prompt = `${SYSTEM_PROMPT}\n\n${userMessage}`
         
-        // Timeout 설정 (20초로 늘림)
+        // Timeout 설정 (모바일 네트워크를 고려하여 25초로 증가)
         const timeoutPromise = new Promise((_, reject) => 
-          setTimeout(() => reject(new Error('Request timeout')), 20000)
+          setTimeout(() => reject(new Error('Request timeout')), 25000)
         )
         
         const result = await Promise.race([
@@ -293,7 +315,12 @@ export async function POST(request: NextRequest) {
     // 일반 오류
     return NextResponse.json(
       { error: '분석 중 문제가 생겼어. 다시 시도해줄래?' },
-      { status: 500 }
+      { 
+        status: 500,
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+        },
+      }
     )
   }
 }

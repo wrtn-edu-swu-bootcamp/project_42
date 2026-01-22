@@ -58,6 +58,10 @@ export default function Home() {
     lastSubmitTimeRef.current = Date.now()
 
     try {
+      // 모바일 네트워크 환경을 고려한 타임아웃 설정 (30초)
+      const controller = new AbortController()
+      const timeoutId = setTimeout(() => controller.abort(), 30000)
+
       const response = await fetch('/api/analyze', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -67,7 +71,10 @@ export default function Home() {
           condition: Object.keys(condition).length > 0 ? condition : undefined,
           tags: tags.trim() ? tags.split(/\s+/).filter(tag => tag.startsWith('#')) : undefined,
         }),
+        signal: controller.signal,
       })
+
+      clearTimeout(timeoutId)
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}))
@@ -95,7 +102,18 @@ export default function Home() {
       // Result 화면으로 이동
       router.push(`/result?id=${result.id}`)
     } catch (err) {
-      setError(getErrorMessage(err))
+      // 모바일 네트워크 오류에 대한 더 명확한 메시지
+      if (err instanceof Error) {
+        if (err.name === 'AbortError' || err.message.includes('timeout')) {
+          setError('네트워크 연결이 느려서 시간이 오래 걸려요. 다시 시도해줄래?')
+        } else if (err.message.includes('Failed to fetch') || err.message.includes('NetworkError')) {
+          setError('인터넷 연결을 확인해주세요. 모바일 데이터를 사용 중이라면 Wi-Fi로 전환해볼까요?')
+        } else {
+          setError(getErrorMessage(err))
+        }
+      } else {
+        setError(getErrorMessage(err))
+      }
     } finally {
       setIsLoading(false)
     }
