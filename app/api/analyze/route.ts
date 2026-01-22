@@ -168,8 +168,16 @@ export async function POST(request: NextRequest) {
           throw new Error('AI 응답이 비어있어요')
         }
 
+        // JSON 추출 (마크다운 코드 블록 제거)
+        let jsonText = responseText.trim()
+        
+        // ```json ... ``` 또는 ``` ... ``` 형식 제거
+        if (jsonText.startsWith('```')) {
+          jsonText = jsonText.replace(/^```(?:json)?\s*\n?/, '').replace(/\n?```\s*$/, '')
+        }
+        
         // JSON 파싱 시도
-        const aiResponse = JSON.parse(responseText)
+        const aiResponse = JSON.parse(jsonText)
         
         // 스키마 검증
         analysis = AnalysisResultSchema.parse(aiResponse)
