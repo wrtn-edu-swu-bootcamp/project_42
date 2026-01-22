@@ -190,13 +190,21 @@ function ResultContent() {
           </div>
           <div className="p-4 space-y-4">
             <div>
-              <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">공감</p>
-              <p className="text-gray-700 leading-relaxed">{analysis.response.empathy}</p>
+              <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">공감</p>
+              <p className="text-gray-700 leading-relaxed whitespace-pre-line">{analysis.response.empathy}</p>
             </div>
             <div className="border-t border-gray-100 pt-4">
-              <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">조언</p>
-              <p className="text-gray-700 leading-relaxed">{analysis.response.advice}</p>
+              <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">조언</p>
+              <p className="text-gray-700 leading-relaxed whitespace-pre-line">{analysis.response.advice}</p>
             </div>
+            {/* 심리학 이론 태그 */}
+            {analysis.response.theory_tags && analysis.response.theory_tags.length > 0 && (
+              <div className="border-t border-gray-100 pt-3">
+                <p className="text-xs text-gray-400">
+                  근거(기획안 기반): {analysis.response.theory_tags.join(' ')}
+                </p>
+              </div>
+            )}
           </div>
         </div>
 

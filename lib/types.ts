@@ -71,6 +71,7 @@ export interface AnalysisResult {
   response: {
     empathy: string // 공감 메시지
     advice: string // 조언
+    theory_tags?: string[] // 심리학 이론 태그 (기획안 기반)
   }
   actions: ActionItem[] // 3~5개
   riskLevel: RiskLevel // 위험 신호 레벨
@@ -141,7 +142,8 @@ export const AnalysisResultSchema = z.object({
   needs: z.string().min(10).max(300),
   response: z.object({
     empathy: z.string().min(10),
-    advice: z.string().min(10)
+    advice: z.string().min(10),
+    theory_tags: z.array(z.string()).optional()
   }),
   actions: z.array(ActionItemSchema).min(1).max(5),
   riskLevel: z.enum(['low', 'medium', 'high'])
