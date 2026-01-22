@@ -35,11 +35,10 @@ function getFallbackAnalysis(): AnalysisResult {
   }
 }
 
-// 안정적인 모델 목록 (과부하 시 순차 시도)
+// 사용 가능한 모델 목록 (2026년 기준)
 const STABLE_MODELS = [
-  'gemini-1.5-flash',
-  'gemini-1.5-pro', 
-  'gemini-pro',
+  'gemini-2.0-flash-lite',  // 가벼운 버전 (과부하 적음)
+  'gemini-2.0-flash',       // 메인 모델
 ]
 
 // 현재 사용할 모델 인덱스
@@ -107,9 +106,9 @@ export async function POST(request: NextRequest) {
 
         const prompt = `${SYSTEM_PROMPT}\n\n${userMessage}`
         
-        // Timeout 설정 (10초)
+        // Timeout 설정 (20초로 늘림)
         const timeoutPromise = new Promise((_, reject) => 
-          setTimeout(() => reject(new Error('Request timeout')), 10000)
+          setTimeout(() => reject(new Error('Request timeout')), 20000)
         )
         
         const result = await Promise.race([
@@ -153,8 +152,10 @@ export async function POST(request: NextRequest) {
         if (attempt === maxRetries) {
           console.error('All AI attempts failed, using fallback')
           analysis = getFallbackAnalysis()
+        } else {
+          // 재시도 전 잠시 대기 (503 과부하 대응)
+          await new Promise(resolve => setTimeout(resolve, 1000))
         }
-        // 재시도할 시도가 남았으면 계속
       }
     }
 
