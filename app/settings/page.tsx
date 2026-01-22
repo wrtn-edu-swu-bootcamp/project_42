@@ -198,9 +198,9 @@ export default function SettingsPage() {
             <p>
               이 앱은 <strong>감정 기록 및 자기 성찰을 돕는 도구</strong>야. 의료적 진단, 치료, 상담을 대신하지 않아.
             </p>
-            <div className="flex items-center justify-between pt-2">
+            <div className="flex items-center justify-between pt-2 border-t border-yellow-100 mt-2">
               <p className="text-yellow-700">
-                위기 상황 시 <strong>전문가 도움</strong> 받기
+                도움받을 수 있는 곳 더보기
               </p>
               <svg className="w-5 h-5 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
