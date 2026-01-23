@@ -40,14 +40,81 @@ function getFallbackAnalysis(): AnalysisResult {
   }
 }
 
-// 사용 가능한 모델 목록 (2026년 기준)
+// 사용 가능한 모델 목록 (2026년 기준) - 더 많은 fallback 옵션
 const STABLE_MODELS = [
-  'gemini-2.0-flash-lite',  // 가벼운 버전 (과부하 적음)
+  'gemini-2.0-flash-lite',  // 가벼운 버전 (과부하 적음) - 우선 사용
+  'gemini-1.5-flash',       // 안정적인 이전 버전
   'gemini-2.0-flash',       // 메인 모델
+  'gemini-1.5-flash-8b',    // 경량 버전
 ]
 
-// 현재 사용할 모델 인덱스
+// 현재 사용할 모델 인덱스 (라운드 로빈)
 let currentModelIndex = 0
+
+/**
+ * JSON 문자열에서 제어 문자를 정제하는 함수
+ * AI 응답에서 발생할 수 있는 잘못된 제어 문자 제거
+ */
+function sanitizeJsonString(str: string): string {
+  // 1. 문자열 내부의 실제 줄바꿈을 \\n으로 변환 (JSON 문자열 값 내부)
+  // 2. 제어 문자 제거 (0x00-0x1F, 단 \n, \r, \t는 이스케이프 처리)
+  let result = str
+  
+  // JSON 문자열 값 내부의 줄바꿈 처리
+  // "key": "value with
+  // newline" 형태를 "key": "value with\\nNewline"으로 변환
+  result = result.replace(/"([^"]*)\n([^"]*)"/g, (match, p1, p2) => {
+    return `"${p1}\\n${p2}"`
+  })
+  
+  // 탭 문자 처리
+  result = result.replace(/"([^"]*)\t([^"]*)"/g, (match, p1, p2) => {
+    return `"${p1}\\t${p2}"`
+  })
+  
+  // 캐리지 리턴 처리
+  result = result.replace(/"([^"]*)\r([^"]*)"/g, (match, p1, p2) => {
+    return `"${p1}\\r${p2}"`
+  })
+  
+  // 나머지 제어 문자 제거 (0x00-0x1F 중 \n, \r, \t 제외)
+  result = result.replace(/[\x00-\x08\x0B\x0C\x0E-\x1F]/g, '')
+  
+  return result
+}
+
+/**
+ * JSON 파싱을 안전하게 수행하는 함수
+ * 여러 단계의 정제를 시도
+ */
+function safeJsonParse(text: string): any {
+  // 1차 시도: 직접 파싱
+  try {
+    return JSON.parse(text)
+  } catch (e1) {
+    console.log('Direct JSON parse failed, trying sanitization...')
+  }
+  
+  // 2차 시도: 제어 문자 정제 후 파싱
+  try {
+    const sanitized = sanitizeJsonString(text)
+    return JSON.parse(sanitized)
+  } catch (e2) {
+    console.log('Sanitized JSON parse failed, trying deep clean...')
+  }
+  
+  // 3차 시도: 더 공격적인 정제
+  try {
+    // 모든 제어 문자 제거
+    let deepCleaned = text.replace(/[\x00-\x1F\x7F]/g, ' ')
+    // 연속 공백 정리
+    deepCleaned = deepCleaned.replace(/\s+/g, ' ')
+    return JSON.parse(deepCleaned)
+  } catch (e3) {
+    console.log('Deep clean JSON parse failed')
+    throw new Error(`JSON 파싱 실패: ${e3 instanceof Error ? e3.message : String(e3)}`)
+  }
+}
 
 /** 429 / rate limit / quota exhausted 여부 확인 */
 function is429OrRateLimitError(err: unknown): boolean {
@@ -126,23 +193,33 @@ export async function POST(request: NextRequest) {
       validated.tags
     )
 
-    // Gemini API 호출 (여러 모델 순차 시도)
+    // Gemini API 호출 (여러 모델 순차 시도 + 개선된 재시도 로직)
     let analysis: any = null // Zod parse 결과를 받기 위해 any 사용
-    const maxRetries = STABLE_MODELS.length // 모든 모델 시도
+    const maxRetries = STABLE_MODELS.length + 2 // 모든 모델 + 추가 재시도
+    let usedModelIndices = new Set<number>() // 이미 시도한 모델 추적
 
     for (let attempt = 1; attempt <= maxRetries; attempt++) {
       try {
-        // 순차적으로 다른 모델 시도
-        const modelName = STABLE_MODELS[(currentModelIndex + attempt - 1) % STABLE_MODELS.length]
-        console.log(`Trying model: ${modelName} (attempt ${attempt})`)
+        // 사용하지 않은 모델 선택 (라운드 로빈 + 429 시 다른 모델로)
+        let modelIndex = (currentModelIndex + attempt - 1) % STABLE_MODELS.length
+        
+        // 429 에러 후 재시도 시, 아직 시도하지 않은 모델 선택
+        while (usedModelIndices.has(modelIndex) && usedModelIndices.size < STABLE_MODELS.length) {
+          modelIndex = (modelIndex + 1) % STABLE_MODELS.length
+        }
+        
+        const modelName = STABLE_MODELS[modelIndex]
+        usedModelIndices.add(modelIndex)
+        
+        console.log(`Trying model: ${modelName} (attempt ${attempt}/${maxRetries})`)
         
         const model = genAI.getGenerativeModel({ 
           model: modelName,
           generationConfig: {
-            temperature: 0.7,
-            maxOutputTokens: 800,
-            topP: 0.95,
-            topK: 40,
+            temperature: 0.6, // 약간 낮춰서 더 안정적인 JSON 출력
+            maxOutputTokens: 1000, // 충분한 토큰 확보
+            topP: 0.9,
+            topK: 32,
           },
         })
 
@@ -175,17 +252,22 @@ export async function POST(request: NextRequest) {
           jsonText = jsonText.replace(/^```(?:json)?\s*\n?/, '').replace(/\n?```\s*$/, '')
         }
         
+        // JSON 중간에 있는 코드 블록 마커도 제거
+        jsonText = jsonText.replace(/```json\s*/g, '').replace(/```\s*/g, '')
+        
         // 디버깅: 정제된 JSON 로그
         console.log('Cleaned JSON (first 500 chars):', jsonText?.substring(0, 500))
         
-        // JSON 파싱 시도
-        const aiResponse = JSON.parse(jsonText)
+        // 안전한 JSON 파싱 (제어 문자 정제 포함)
+        const aiResponse = safeJsonParse(jsonText)
         
         // 스키마 검증
         analysis = AnalysisResultSchema.parse(aiResponse)
         
-        // 성공하면 루프 종료
-        console.log(`AI analysis succeeded on attempt ${attempt}`)
+        // 성공하면 다음 요청을 위해 모델 인덱스 업데이트 (라운드 로빈)
+        currentModelIndex = (modelIndex + 1) % STABLE_MODELS.length
+        
+        console.log(`AI analysis succeeded on attempt ${attempt} with model ${modelName}`)
         break
       } catch (parseError: unknown) {
         const errMsg = parseError instanceof Error ? parseError.message : String(parseError)
@@ -196,10 +278,24 @@ export async function POST(request: NextRequest) {
           console.error('All AI attempts failed, using fallback')
           analysis = getFallbackAnalysis()
         } else {
-          // 429/할당량 초과 시 exponential backoff, 그 외 1초 대기 (503 등)
-          const delayMs = is429OrRateLimitError(parseError)
-            ? Math.min(2000 * Math.pow(2, attempt - 1), 15000)
-            : 1000
+          // 429/할당량 초과 시: 짧은 대기 후 다른 모델로 즉시 전환
+          // JSON 파싱 에러 시: 짧은 대기 후 재시도
+          // 기타 에러 시: 1초 대기
+          let delayMs = 500
+          
+          if (is429OrRateLimitError(parseError)) {
+            // 429 에러: 다른 모델로 빠르게 전환 (대기 없이)
+            delayMs = 100
+            console.log('Rate limited, switching to different model immediately...')
+          } else if (errMsg.includes('JSON') || errMsg.includes('control character')) {
+            // JSON 파싱 에러: 짧은 대기 후 재시도
+            delayMs = 300
+            console.log('JSON parse error, retrying with same or different model...')
+          } else {
+            // 기타 에러: exponential backoff
+            delayMs = Math.min(1000 * attempt, 5000)
+          }
+          
           await new Promise((resolve) => setTimeout(resolve, delayMs))
         }
       }
